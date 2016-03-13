@@ -3,7 +3,7 @@
 
 # Require the Waitr Web Driver
 require 'watir-webdriver'
-
+require 'watir-scroll'
 =begin
  Steps required to Submit a listing to YellowHoo Site. The File should do the same thing as human do
  	1. Login  --> Login Details. Since it allows only one free listing per login, I need a few. Say 10
@@ -28,8 +28,7 @@ module WatirDetails
 	@login_details = [] # 0 - Username/email 1 - Password
 	@site_url  = nil;
 	
-
-	# Submit the given details to the corresponding site
+1	# Submit the given details to the corresponding site
 	# Making it similar to Interfaces in java, without implementing it
 	# Let this method get's redefined in in the classes
 	def submit!
@@ -40,6 +39,7 @@ module WatirDetails
 	def login
 	end
 end
+
 class YellowHooSubmitter
 	#Include the module
 	include WatirDetails	
@@ -47,15 +47,16 @@ class YellowHooSubmitter
 	# Constructor -> Get the listing details to be submitted in the given site
 	def initialize(listingDetails, site_url,login_details)
 		@site_details  = listingDetails
-		@login_details =login_details
+		@login_details = login_details
 		@site_url      = site_url
-		@browser   = Watir::Browser.new :firefox
+		@browser       = Watir::Browser.new :firefox
 	end
 
 	# We actually implement the Dummy method present in the WatirDetails Module
 	def login
 		# Set Home Page
 		@browser.goto @site_url
+		@browser.window.maximize
 		# Unable to access My Account Button since it has 2 buttons of same name with one disabled.
 		# Using click here to sign up button. And it works
 		@browser.link(:id =>'modal-launcher').click
@@ -67,11 +68,47 @@ class YellowHooSubmitter
 
 		#Login
 		@browser.button(:value => 'Login').click
+	end
 
-		#Verify if Login is successfully programmatically, by using the URL
-		if @browser.url != 'http://www.yellowhoo.com/members'
-			return false
+	# Implementing the Submit method.
+	def submit!
+		login
+		sleep 2  # Let the browser finish loading
+		puts @browser.url
+		# Click on Add Your Business link
+		# @browser.div(:class => 'profile-usermenu').li(:text => /add_business/).link(:text => 'ADD YOUR BUSINESS').click
+		@browser.div(:class=>"profile-usermenu").links.each do | link | 
+			if link.text == 'ADD YOUR BUSINESS'
+				link.click 
+				break
+			end
 		end
-		return true
+		#Click on the Add Your Business in Price list button, So we will be able add our business
+		@browser.div(:class => 'panel price panel-grey').div(:class => 'panel-footer').link(:text => 'Add Your Business').click
+
+		# Start adding the data to the elements as per the hash
+		@browser.text_field(:id => 'listing_title').set @site_details["name"]
+
+		# Select the category
+		categories = @browser.ul(:class => 'dynatree-container').lis
+		categories.each do |category|
+			if category.text == @site_details["category"]
+				puts category.text
+				category.a.click
+				category.link(:text => @site_details["sub_category_name"]).click
+				# if further subcategory is provided, we need to handle it here
+			end
+		end
+		# Scroll down a little so that, the text_field is visible
+		# @browser.driver.execute_script("window.scrollBy(0,300)") # Same pblm with Category Selection - Need to handle it
+		# text_area =  @browser.textarea(:id => "listing_description")
+		# puts text_area.class
+		# # @browser.wait_until { text_area.visible? }
+		# puts "I reached till scroll"
+		# text_area.set @site_details["description"]
+		@browser.element(:xpath => "//textarea[@id='listing_description']").send_keys "1=1" , @site_details["description"]
+
 	end
 end
+
+	
