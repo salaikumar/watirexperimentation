@@ -30,6 +30,8 @@ module WatirDetails
 	
 
 	# Submit the given details to the corresponding site
+	# Making it similar to Interfaces in java, without implementing it
+	# Let this method get's redefined in in the classes
 	def submit!
 	end
 
@@ -54,6 +56,22 @@ class YellowHooSubmitter
 	def login
 		# Set Home Page
 		@browser.goto @site_url
-		@browser.button(:data-target="#login").click
+		# Unable to access My Account Button since it has 2 buttons of same name with one disabled.
+		# Using click here to sign up button. And it works
+		@browser.link(:id =>'modal-launcher').click
+
+		#Set the username and password from the login_details array
+		# Since these two elements would be present after the previous step, no need to check when_present
+		@browser.text_field(:id => 'username').set @login_details[0]
+		@browser.text_field(:id => 'password').set @login_details[1]
+
+		#Login
+		@browser.button(:value => 'Login').click
+
+		#Verify if Login is successfully programmatically, by using the URL
+		if @browser.url != 'http://www.yellowhoo.com/members'
+			return false
+		end
+		return true
 	end
 end
