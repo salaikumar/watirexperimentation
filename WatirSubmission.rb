@@ -101,13 +101,25 @@ class YellowHooSubmitter
 		end
 		# Scroll down a little so that, the text_field is visible
 		# @browser.driver.execute_script("window.scrollBy(0,300)") # Same pblm with Category Selection - Need to handle it
-		# text_area =  @browser.textarea(:id => "listing_description")
-		# puts text_area.class
-		# # @browser.wait_until { text_area.visible? }
-		# puts "I reached till scroll"
-		# text_area.set @site_details["description"]
-		@browser.element(:xpath => "//textarea[@id='listing_description']").send_keys "1=1" , @site_details["description"]
+		# sleep 2 # Let the browser scroll
+		# @browser.element(:xpath => "//textarea[@id='listing_description']").send_keys "1=1" , @site_details["description"]
+		# The Actual data set part is present within an iframe. 
+		# @browser.execute_script("tinyMCE.get('listing_description_ifr').execCommand('mceSetContent',false, 'hello world' );")
+		 @browser.iframe(:id => "listing_description_ifr").send_keys @site_details['description']
+		# driver.switch_to.frame(tinymce_obj)
+		# puts tinymce_obj.id
+		#  So - It exits for sure. 
+		# Let's print all the iframes and see
+		# puts "List of Frames"
+		# @browser.iframes.map { |iframe| 
+			# puts iframe.id
+		# }
+		@browser.textarea(:id => 'listing_keywords').set @site_details['keywords']
 
+		# Page 2 Filling - Navigate to Address
+		@browser.scroll.to :top
+		@browser.div(:class => 'tabbable-panel').div(:class => 'tabbable-line').link(:text => 'Address').click		
+		# @browser.element(:xpath => "//link[@text='Address']").click
 	end
 end
 

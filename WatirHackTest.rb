@@ -14,6 +14,7 @@ location_params = {
         "sub_category_name"=>"Night Clubs",
         "description"=>"sample text desc",
         "additional_info"=>"",
+        "keywords" => 'sample,sample'
       }
       
 SampleSubmitter = YellowHooSubmitter.new(location_params,"http://www.yellowhoo.com/",
