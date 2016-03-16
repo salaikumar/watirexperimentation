@@ -23,10 +23,10 @@ module WatirDetails
 	@verified   = false
 	@successful = false
 	@submitted  = false
-	@login_details = [] # 0 - Username/email 1 - Password
+	@login_details = []
 	@site_url  = nil;
 	
-1	# Submit the given details to the corresponding site
+	# Submit the given details to the corresponding site
 	def submit!
 	end
 
@@ -78,7 +78,6 @@ class YellowHooSubmitter
 		categories = @browser.ul(:class => 'dynatree-container').lis
 		categories.each do |category|
 			if category.text == @site_details["category"]
-				puts category.text
 				category.a.click
 				category.link(:text => @site_details["sub_category_name"]).click
 			end
@@ -104,7 +103,14 @@ class YellowHooSubmitter
 		# Page 2 Filling - Navigate to Address
 		@browser.scroll.to :top
 		@browser.div(:class => 'tabbable-panel').div(:class => 'tabbable-line').link(:text => 'Address').click		
-		# @browser.element(:xpath => "//link[@text='Address']").click
+		# @browser.select_list(:id => 'listing_country_id').select @site_details['country_iso']
+	    @browser.div(:class => 'selectize-control col-sm-9 single',:index => 0).click
+	    @browser.div(:class => 'selectize-dropdown single col-sm-9',:index => 0).div(:class => 'selectize-dropdown-content',:index => 0).div(:data_value => @site_details['country_iso']).click
+	    # State list
+		@browser.div(:class => 'selectize-control col-sm-9 single',:index => 1).click
+		sleep 2
+		@browser.div(:class => 'selectize-dropdown single col-sm-9').div(:class => 'selectize-dropdown-content').div(:data_value => @site_details['state_iso']).click
+		
 	end
 end
 
