@@ -58,6 +58,12 @@ class YellowHooSubmitter
 
 	def submit!
 		login
+
+		# Wait untill the page loads
+		Watir::Wait.until(){
+			@browser.url == "http://www.yellowhoo.com/members"
+		}
+
 		# Click on Add Your Business link
 		# @browser.div(:class => 'profile-usermenu').li(:text => /add_business/).link(:text => 'ADD YOUR BUSINESS').click
 		@browser.div(:class=>"profile-usermenu").links.each do | link | 
@@ -70,7 +76,7 @@ class YellowHooSubmitter
 		@browser.div(:class => 'panel price panel-grey').div(:class => 'panel-footer').link(:text => 'Add Your Business').click
 		@browser.text_field(:id => 'listing_title').set @site_details["name"]
 		categories = @browser.ul(:class => 'dynatree-container').lis
-		categoryategories.each do |category|
+		categories.each do |category|
 			if category.text == @site_details["category"]
 				puts category.text
 				category.a.click
