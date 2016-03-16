@@ -17,8 +17,6 @@ require 'watir-scroll'
     3. Complete the Navigation, Submit the listing and Verify it.
 =end
 
-# I had made it look like a Interfaces in JAVA a little.
-# Javaish guy I'm. Will make it Rubyish soon
 module WatirDetails
 	# Lising details to be submitted in the site
 	@site_details = {}
@@ -29,13 +27,10 @@ module WatirDetails
 	@site_url  = nil;
 	
 1	# Submit the given details to the corresponding site
-	# Making it similar to Interfaces in java, without implementing it
-	# Let this method get's redefined in in the classes
 	def submit!
 	end
 
 	# Login and check if you are in the right page after login.
-	# Verification is done using the urls
 	def login
 	end
 end
@@ -52,29 +47,17 @@ class YellowHooSubmitter
 		@browser       = Watir::Browser.new :firefox
 	end
 
-	# We actually implement the Dummy method present in the WatirDetails Module
 	def login
-		# Set Home Page
 		@browser.goto @site_url
 		@browser.window.maximize
-		# Unable to access My Account Button since it has 2 buttons of same name with one disabled.
-		# Using click here to sign up button. And it works
 		@browser.link(:id =>'modal-launcher').click
-
-		#Set the username and password from the login_details array
-		# Since these two elements would be present after the previous step, no need to check when_present
 		@browser.text_field(:id => 'username').set @login_details[0]
 		@browser.text_field(:id => 'password').set @login_details[1]
-
-		#Login
 		@browser.button(:value => 'Login').click
 	end
 
-	# Implementing the Submit method.
 	def submit!
 		login
-		sleep 2  # Let the browser finish loading
-		puts @browser.url
 		# Click on Add Your Business link
 		# @browser.div(:class => 'profile-usermenu').li(:text => /add_business/).link(:text => 'ADD YOUR BUSINESS').click
 		@browser.div(:class=>"profile-usermenu").links.each do | link | 
@@ -83,29 +66,25 @@ class YellowHooSubmitter
 				break
 			end
 		end
-		#Click on the Add Your Business in Price list button, So we will be able add our business
+
 		@browser.div(:class => 'panel price panel-grey').div(:class => 'panel-footer').link(:text => 'Add Your Business').click
-
-		# Start adding the data to the elements as per the hash
 		@browser.text_field(:id => 'listing_title').set @site_details["name"]
-
-		# Select the category
 		categories = @browser.ul(:class => 'dynatree-container').lis
-		categories.each do |category|
+		categoryategories.each do |category|
 			if category.text == @site_details["category"]
 				puts category.text
 				category.a.click
 				category.link(:text => @site_details["sub_category_name"]).click
-				# if further subcategory is provided, we need to handle it here
 			end
 		end
-		# Scroll down a little so that, the text_field is visible
+
+
 		# @browser.driver.execute_script("window.scrollBy(0,300)") # Same pblm with Category Selection - Need to handle it
-		# sleep 2 # Let the browser scroll
-		# @browser.element(:xpath => "//textarea[@id='listing_description']").send_keys "1=1" , @site_details["description"]
 		# The Actual data set part is present within an iframe. 
 		# @browser.execute_script("tinyMCE.get('listing_description_ifr').execCommand('mceSetContent',false, 'hello world' );")
 		 @browser.iframe(:id => "listing_description_ifr").send_keys @site_details['description']
+
+		# -- below code for reference  - will be removed --
 		# driver.switch_to.frame(tinymce_obj)
 		# puts tinymce_obj.id
 		#  So - It exits for sure. 
