@@ -82,35 +82,15 @@ class YellowHooSubmitter
 				category.link(:text => @site_details["sub_category_name"]).click
 			end
 		end
-
-
-		# @browser.driver.execute_script("window.scrollBy(0,300)") # Same pblm with Category Selection - Need to handle it
-		# The Actual data set part is present within an iframe. 
-		# @browser.execute_script("tinyMCE.get('listing_description_ifr').execCommand('mceSetContent',false, 'hello world' );")
-		 @browser.iframe(:id => "listing_description_ifr").send_keys @site_details['description']
-
-		# -- below code for reference  - will be removed --
-		# driver.switch_to.frame(tinymce_obj)
-		# puts tinymce_obj.id
-		#  So - It exits for sure. 
-		# Let's print all the iframes and see
-		# puts "List of Frames"
-		# @browser.iframes.map { |iframe| 
-			# puts iframe.id
-		# }
+		@browser.iframe(:id => "listing_description_ifr").send_keys @site_details['description']
 		@browser.textarea(:id => 'listing_keywords').set @site_details['keywords']
 
 		# Page 2 Filling - Navigate to Address
 		@browser.scroll.to :top
 		@browser.div(:class => 'tabbable-panel').div(:class => 'tabbable-line').link(:text => 'Address').click		
-		# @browser.select_list(:id => 'listing_country_id').select @site_details['country_iso']
 	    @browser.div(:class => 'selectize-control col-sm-9 single',:index => 0).click
 	    @browser.div(:class => 'selectize-dropdown single col-sm-9',:index => 0).div(:class => 'selectize-dropdown-content',:index => 0).div(:data_value => @site_details['country_iso']).click
-	    # State list
-		@browser.div(:class => 'selectize-control col-sm-9 single',:index => 1).click
-		sleep 2
-		@browser.div(:class => 'selectize-dropdown single col-sm-9').div(:class => 'selectize-dropdown-content').div(:data_value => @site_details['state_iso']).click
-		
+	    
 	end
 end
 
