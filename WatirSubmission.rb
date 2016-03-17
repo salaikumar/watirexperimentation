@@ -44,13 +44,17 @@ class YellowHooSubmitter
 		@site_details  = listingDetails
 		@login_details = login_details
 		@site_url      = site_url
-		@browser       = Watir::Browser.new :firefox
+		@browser       = Watir::Browser.new :chrome
 	end
 
 	def login
 		@browser.goto @site_url
 		@browser.window.maximize
 		@browser.link(:id =>'modal-launcher').click
+		Watir::Wait.until(){
+			@browser.text_field(:id => 'username').visible?
+		}
+
 		@browser.text_field(:id => 'username').set @login_details[0]
 		@browser.text_field(:id => 'password').set @login_details[1]
 		@browser.button(:value => 'Login').click
@@ -72,8 +76,16 @@ class YellowHooSubmitter
 				break
 			end
 		end
-
-		@browser.div(:class => 'panel price panel-grey').div(:class => 'panel-footer').link(:text => 'Add Your Business').click
+		
+		# Wait untill the menu loads
+		Watir::Wait.until(){
+			@browser.div(:class => 'panel price panel-grey').exists?			
+		}
+		@browser.element(:xpath => '/html/body/div[2]/div/div/div[2]/div/div/div/div/div[3]/a[1]').click
+		# @browser.div(:class => 'panel price panel-grey').div(:class => 'panel-footer').link(:text => 'Add Your Business').click
+		Watir::Wait.until(){
+			@browser.text_field(:id => 'listing_title').exists?			
+		}
 		@browser.text_field(:id => 'listing_title').set @site_details["name"]
 		categories = @browser.ul(:class => 'dynatree-container').lis
 		categories.each do |category|
@@ -88,9 +100,27 @@ class YellowHooSubmitter
 		# Page 2 Filling - Navigate to Address
 		@browser.scroll.to :top
 		@browser.div(:class => 'tabbable-panel').div(:class => 'tabbable-line').link(:text => 'Address').click		
+	    #Country
 	    @browser.div(:class => 'selectize-control col-sm-9 single',:index => 0).click
 	    @browser.div(:class => 'selectize-dropdown single col-sm-9',:index => 0).div(:class => 'selectize-dropdown-content',:index => 0).div(:data_value => @site_details['country_iso']).click
-	    
+		
+		#State
+		Watir::Wait.until(){
+			@browser.element(:xpath => '//*[@id="address"]/div/div/div[2]/div/div[1]').exists? 
+		}
+		puts "Exists"
+
+		#Use Execute Script to make selectizable listen to user actions
+		@browser.execute_script("
+                                 var selectizeControl = document.getElementById('listing_state_id').selectize
+                                 selectizeControl.enable()"
+                                 )
+		puts "I reached after script"
+		@browser.element(:xpath => '//*[@id="address"]/div/div/div[2]/div/div[1]').click
+		Watir::Wait.until(){
+			@browser.element(:xpath => '//*[@id="address"]/div/div/div[2]/div/div[2]').visible?
+		}
+		@browser.element(:xpath => '//*[@id="address"]/div/div/div[2]/div/div[2]').div(:data_value => @site_details['state_iso']).click
 	end
 end
 
