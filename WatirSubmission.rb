@@ -20,9 +20,7 @@ require 'watir-scroll'
 module WatirDetails
 	# Lising details to be submitted in the site
 	@site_details = {}
-	@verified   = false
 	@successful = false
-	@submitted  = false
 	@login_details = []
 	@site_url  = nil;
 	
@@ -77,6 +75,17 @@ class YellowHooSubmitter
 			end
 		end
 		
+		#If Page navigates to Buy Membership, Click on the buy now --> Free Package
+		if @browser.url == 'http://www.yellowhoo.com/members/membership'
+			@browser.element(:xpath => '//*[@id="plans"]/li[1]/ul/li[4]/a').click
+			@browser.div(:class=>"profile-usermenu").links.each do | link | 
+				if link.text == 'ADD YOUR BUSINESS'
+					link.click 
+					break
+				end
+			end
+		end
+
 		# Wait untill the menu loads
 		Watir::Wait.until(){
 			@browser.div(:class => 'panel price panel-grey').exists?			
@@ -108,19 +117,59 @@ class YellowHooSubmitter
 		Watir::Wait.until(){
 			@browser.element(:xpath => '//*[@id="address"]/div/div/div[2]/div/div[1]').exists? 
 		}
-		puts "Exists"
-
+		
 		#Use Execute Script to make selectizable listen to user actions
 		@browser.execute_script("
                                  var selectizeControl = document.getElementById('listing_state_id').selectize
                                  selectizeControl.enable()"
                                  )
-		puts "I reached after script"
 		@browser.element(:xpath => '//*[@id="address"]/div/div/div[2]/div/div[1]').click
 		Watir::Wait.until(){
 			@browser.element(:xpath => '//*[@id="address"]/div/div/div[2]/div/div[2]').visible?
 		}
 		@browser.element(:xpath => '//*[@id="address"]/div/div/div[2]/div/div[2]').div(:data_value => @site_details['state_iso']).click
+
+		#City
+		Watir::Wait.until(){
+			@browser.element(:xpath => '//*[@id="address"]/div/div/div[3]/div/div[1]/input').exists? 
+		} 	
+		#Use Execute Script to make selectizable listen to user actions
+		@browser.execute_script("
+                                 var selectizeControl = document.getElementById('listing_city_id').selectize
+                                 selectizeControl.enable()"
+                                 )
+		#The input type text within the city select
+		@browser.element(:xpath => '//*[@id="address"]/div/div/div[3]/div/div[1]/input').click
+
+		# The Small box with options to select
+		Watir::Wait.until(){
+			@browser.element(:xpath => '//*[@id="address"]/div/div/div[3]/div/div[2]/div').visible?
+		}
+		@browser.element(:xpath => '//*[@id="address"]/div/div/div[3]/div/div[2]/div').div(:text => @site_details['city']).click
+
+		# Postal Code
+		@browser.text_field(:id => 'listing_postcode').set	@site_details['postal_code']
+			
+		#Address
+		@browser.textarea(:id => 'listing_address').set @site_details['street']
+
+		#Page 3 -- contact_info
+		@browser.scroll.to :top
+		@browser.div(:class => 'tabbable-panel').div(:class => 'tabbable-line').link(:text => 'Contact Info').click
+
+		# Wait till the page loads
+		#Contact Person
+
+		Watir::Wait.until(){
+			@browser.text_field(:id => 'listing_contact_person').visible?
+		}
+		contact_person = "#{@site_details['owner_first_name']}  #{@site_details['owner_last_name']}"
+		@browser.text_field(:id => 'listing_contact_person').set contact_person		
+		@browser.text_field(:id => 'listing_phone_number').set @site_details['phone']	
+		@browser.text_field(:id => 'listing_website').set @site_details['biz_url']	
+		@browser.text_field(:id => 'listing_email').set @site_details['email']	
+		# Save it finally
+		@browser.button(:name => 'save').click
 	end
 end
 
