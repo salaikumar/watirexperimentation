@@ -1,7 +1,6 @@
 # Watir Hack
-
 Dependencies
-================================
+---------------------------------------
 1. Watir Webdriver Gem
 	* https://github.com/watir/watir-webdriver
 2. Watir Scroll 
