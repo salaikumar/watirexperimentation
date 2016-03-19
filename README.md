@@ -1,11 +1,12 @@
 # Watir Hack
 
-##Dependencies.
+## Dependencies
    * Watir Webdriver Gem
       https://github.com/watir/watir-webdriver
    * Watir Scroll 
    	  https://github.com/p0deje/watir-scroll
-##Use
+## Use
   * Execute the program in WatirHack by giving email and password as Command line arguments
   ruby WatirHack.rb <email> <password>
 
+Note: Data present in the WatirHackTest is sample. By now, the program fills the fields present in the Hash alone
