@@ -1,6 +1,11 @@
-# Watir Hacks
-Simple Hacks using Watir Ruby gem
+# Watir Hack
 
-Given a set of details, it will help to submit it in a website.
+##Dependencies.
+   * Watir Webdriver Gem
+      https://github.com/watir/watir-webdriver
+   * Watir Scroll 
+   	  https://github.com/p0deje/watir-scroll
+##Use
+  * Execute the program in WatirHack by giving email and password as Command line arguments
+  ruby WatirHack.rb <email> <password>
 
-Note: Since I'm getting started with Ruby, give me sometime to make it proper one with tests and all.

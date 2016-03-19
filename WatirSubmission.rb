@@ -187,7 +187,7 @@ class YellowHooSubmitter
 		fillpagethree
 
 		#save
-		@browser.button(:name => 'save').click
+		# @browser.button(:name => 'save').click
 	end
 end
 

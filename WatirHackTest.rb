@@ -17,7 +17,9 @@ location_params = {
         "keywords" => 'sample,sample',
         "email" => 'sample@samplemail.com'
       }
-      
+ 
+login_details = [] 
+login_details << ARGV[0] << ARGV[1]
 SampleSubmitter = YellowHooSubmitter.new(location_params,"http://www.yellowhoo.com/",
-										   ['ind.vijayworldz@gmail.com','@Spire90039']	)
+										   login_details	)
 SampleSubmitter.submit!
