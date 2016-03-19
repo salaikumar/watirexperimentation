@@ -59,9 +59,11 @@ class YellowHooSubmitter
 	end
 
 	def navigate
+		# Wait till home page loads
 		Watir::Wait.until(){
 			@browser.url == "http://www.yellowhoo.com/members"
 		}
+
 		# Click on Add Your Business link
 		@browser.div(:class=>"profile-usermenu").links.each do | link | 
 			if link.text == 'ADD YOUR BUSINESS'
@@ -70,21 +72,29 @@ class YellowHooSubmitter
 			end
 		end
 
+		# Wait untill either buy package /add your business page loads
+		Watir::Wait.until(){
+			@browser.url == "http://www.yellowhoo.com/members/membership" ||
+			@browser.div(:class => 'panel price panel-grey').exists?  # Add your business, select package panel exists
+		}
+
 		if @browser.url == 'http://www.yellowhoo.com/members/membership'
 			@browser.element(:xpath => '//*[@id="plans"]/li[1]/ul/li[4]/a').click
+			Watir::Wait.until(){
+				@browser.url == "http://www.yellowhoo.com/members"
+			}
 			@browser.div(:class=>"profile-usermenu").links.each do | link | 
 				if link.text == 'ADD YOUR BUSINESS'
 					link.click 
 					break
 				end
 			end
-		else
-			# Wait untill the menu loads
-			Watir::Wait.until(){
-				@browser.div(:class => 'panel price panel-grey').exists?			
-			}
-			@browser.element(:xpath => '/html/body/div[2]/div/div/div[2]/div/div/div/div/div[3]/a[1]').click
 		end
+		# Wait untill the menu loads
+		Watir::Wait.until(){
+			@browser.div(:class => 'panel price panel-grey').exists?			
+		}	
+		@browser.element(:xpath => '/html/body/div[2]/div/div/div[2]/div/div/div/div/div[3]/a[1]').click
 	end
 
 	def fillpageone
@@ -172,7 +182,8 @@ class YellowHooSubmitter
 	def submit!
 		login
 		navigate
-		fillpageone	
+		fillpageone
+		fillpagetwo	
 		fillpagethree
 
 		#save

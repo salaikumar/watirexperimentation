@@ -10,8 +10,8 @@ location_params = {
         "owner_last_name"=>"SampleSubmitter",
         "state_iso"=>"2",
         "country_iso"=>"US",
-        "category"=>"Arts Entertainment",
-        "sub_category_name"=>"Night Clubs",
+        "category"=>"Tourism & Voyage",
+        "sub_category_name"=>"Resorts",
         "description"=>"sample text desc",
         "additional_info"=>"",
         "keywords" => 'sample,sample',
@@ -19,5 +19,5 @@ location_params = {
       }
       
 SampleSubmitter = YellowHooSubmitter.new(location_params,"http://www.yellowhoo.com/",
-										   ['saravanan1115@gmail.com','@Spire90039']	)
+										   ['ind.vijayworldz@gmail.com','@Spire90039']	)
 SampleSubmitter.submit!
