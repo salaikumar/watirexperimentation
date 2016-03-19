@@ -58,24 +58,18 @@ class YellowHooSubmitter
 		@browser.button(:value => 'Login').click
 	end
 
-	def submit!
-		login
-
-		# Wait untill the page loads
+	def navigate
 		Watir::Wait.until(){
 			@browser.url == "http://www.yellowhoo.com/members"
 		}
-
 		# Click on Add Your Business link
-		# @browser.div(:class => 'profile-usermenu').li(:text => /add_business/).link(:text => 'ADD YOUR BUSINESS').click
 		@browser.div(:class=>"profile-usermenu").links.each do | link | 
 			if link.text == 'ADD YOUR BUSINESS'
 				link.click 
 				break
 			end
 		end
-		
-		#If Page navigates to Buy Membership, Click on the buy now --> Free Package
+
 		if @browser.url == 'http://www.yellowhoo.com/members/membership'
 			@browser.element(:xpath => '//*[@id="plans"]/li[1]/ul/li[4]/a').click
 			@browser.div(:class=>"profile-usermenu").links.each do | link | 
@@ -84,21 +78,23 @@ class YellowHooSubmitter
 					break
 				end
 			end
+		else
+			# Wait untill the menu loads
+			Watir::Wait.until(){
+				@browser.div(:class => 'panel price panel-grey').exists?			
+			}
+			@browser.element(:xpath => '/html/body/div[2]/div/div/div[2]/div/div/div/div/div[3]/a[1]').click
 		end
+	end
 
-		# Wait untill the menu loads
-		Watir::Wait.until(){
-			@browser.div(:class => 'panel price panel-grey').exists?			
-		}
-		@browser.element(:xpath => '/html/body/div[2]/div/div/div[2]/div/div/div/div/div[3]/a[1]').click
-		# @browser.div(:class => 'panel price panel-grey').div(:class => 'panel-footer').link(:text => 'Add Your Business').click
+	def fillpageone
 		Watir::Wait.until(){
 			@browser.text_field(:id => 'listing_title').exists?			
 		}
 		@browser.text_field(:id => 'listing_title').set @site_details["name"]
 		categories = @browser.ul(:class => 'dynatree-container').lis
 		categories.each do |category|
-			if category.text == @site_details["category"]
+			if category.text == @site_details[	"category"]
 				category.a.click
 				category.link(:text => @site_details["sub_category_name"]).click
 			end
@@ -106,6 +102,8 @@ class YellowHooSubmitter
 		@browser.iframe(:id => "listing_description_ifr").send_keys @site_details['description']
 		@browser.textarea(:id => 'listing_keywords').set @site_details['keywords']
 
+	end
+	def fillpagetwo
 		# Page 2 Filling - Navigate to Address
 		@browser.scroll.to :top
 		@browser.div(:class => 'tabbable-panel').div(:class => 'tabbable-line').link(:text => 'Address').click		
@@ -153,6 +151,8 @@ class YellowHooSubmitter
 		#Address
 		@browser.textarea(:id => 'listing_address').set @site_details['street']
 
+	end
+	def fillpagethree
 		#Page 3 -- contact_info
 		@browser.scroll.to :top
 		@browser.div(:class => 'tabbable-panel').div(:class => 'tabbable-line').link(:text => 'Contact Info').click
@@ -168,7 +168,14 @@ class YellowHooSubmitter
 		@browser.text_field(:id => 'listing_phone_number').set @site_details['phone']	
 		@browser.text_field(:id => 'listing_website').set @site_details['biz_url']	
 		@browser.text_field(:id => 'listing_email').set @site_details['email']	
-		# Save it finally
+	end
+	def submit!
+		login
+		navigate
+		fillpageone	
+		fillpagethree
+
+		#save
 		@browser.button(:name => 'save').click
 	end
 end
