@@ -2,6 +2,7 @@
 ###Dependencies
 1. Watir Webdriver Gem -https://github.com/watir/watir-webdriver
 2. Watir Scroll -https://github.com/p0deje/watir-scroll
+3. Chrome driver - http://chromedriver.storage.googleapis.com/index.html
 
 ###Use
 Execute the program -ruby WatirHack.rb 'email@mail.com' 'password'
